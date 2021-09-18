@@ -66,8 +66,15 @@ Setup a timer. On tick:
             // Create a buffer of 32 bytes of data to be transmitted.
             string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
             byte[] buffer = Encoding.ASCII.GetBytes(data);
-            PingReply reply = pingSender.Send(address, Timeout, buffer, options);
-            LogReply(address, reply);
+            try
+            {
+                PingReply reply = pingSender.Send(address, Timeout, buffer, options);
+                LogReply(address, reply);
+            }
+            catch (Exception ex)
+            {
+                LogException(ex);
+            }
         }
 
         void LogReply(string address, PingReply reply)
@@ -84,6 +91,12 @@ Setup a timer. On tick:
             string filename = result.Success ? SuccessFile : FailureFile;
             string logMessage = JsonSerializer.Serialize(result);
             File.AppendAllLines(filename, new[] { logMessage });
+        }
+
+        void LogException(Exception ex)
+        {
+            string filename = FailureFile;
+            File.AppendAllLines(filename, new[] { ex.ToString() });
         }
     }
 
