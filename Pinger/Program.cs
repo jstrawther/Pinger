@@ -40,9 +40,16 @@ Setup a timer. On tick:
         [Required]
         public string FailureFile { get; }
 
+        [Option("--timeout")]
+        [Required]
+        public int Timeout { get; }
+
         public async Task OnExecute()
         {
-            while(true)
+            Directory.CreateDirectory(Path.GetDirectoryName(SuccessFile));
+            Directory.CreateDirectory(Path.GetDirectoryName(FailureFile));
+
+            while (true)
             {
                 Ping(RouterIP);
                 Ping(ExternalServer);
@@ -59,8 +66,7 @@ Setup a timer. On tick:
             // Create a buffer of 32 bytes of data to be transmitted.
             string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
             byte[] buffer = Encoding.ASCII.GetBytes(data);
-            int timeout = 120;
-            PingReply reply = pingSender.Send(address, timeout, buffer, options);
+            PingReply reply = pingSender.Send(address, Timeout, buffer, options);
             LogReply(address, reply);
         }
 

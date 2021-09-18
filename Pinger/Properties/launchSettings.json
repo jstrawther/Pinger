@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Pinger": {
+      "commandName": "Project",
+      "commandLineArgs": "--router 192.168.1.1 --external-server github.com --success-file logs/success.log --failure-file logs/failure.log --timeout 1000"
+    }
+  }
+}
