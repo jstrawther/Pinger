@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 
-namespace Pingerj
+namespace Pinger
 {
     /*
 Pinger
@@ -69,15 +69,15 @@ Setup a timer. On tick:
             try
             {
                 PingReply reply = pingSender.Send(address, Timeout, buffer, options);
-                LogReply(address, reply);
+                LogPingReply(address, reply);
             }
             catch (Exception ex)
             {
-                LogException(ex);
+                LogException(address, ex);
             }
         }
 
-        void LogReply(string address, PingReply reply)
+        void LogPingReply(string address, PingReply reply)
         {
             var result = new PingResult
             {
@@ -87,16 +87,27 @@ Setup a timer. On tick:
                 Status = reply.Status.ToString(),
                 Success = reply.Status == IPStatus.Success
             };
+            LogResult(result);
+        }
 
+        void LogException(string address, Exception ex)
+        {
+            var result = new PingResult
+            {
+                Address = address,
+                Timestamp = DateTime.Now,
+                Status = "Exception",
+                Success = false,
+                Exception = ex.ToString()
+            };
+            LogResult(result);
+        }
+
+        void LogResult(PingResult result)
+        {
             string filename = result.Success ? SuccessFile : FailureFile;
             string logMessage = JsonSerializer.Serialize(result);
             File.AppendAllLines(filename, new[] { logMessage });
-        }
-
-        void LogException(Exception ex)
-        {
-            string filename = FailureFile;
-            File.AppendAllLines(filename, new[] { ex.ToString() });
         }
     }
 
@@ -105,7 +116,8 @@ Setup a timer. On tick:
         public bool Success { get; set; }
         public string Address { get; set; }
         public DateTime Timestamp { get; set; }
-        public long RoundtripTime { get; internal set; }
-        public string Status { get; internal set; }
+        public long RoundtripTime { get; set; }
+        public string Status { get; set; }
+        public string Exception { get; set; }
     }
 }
